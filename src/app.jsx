@@ -22,23 +22,36 @@ export default function MinimalBlog() {
   const [selectedStory, setSelectedStory] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+useEffect(() => {
+  // Check for password reset in URL hash
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const type = hashParams.get('type');
+  
+  if (type === 'recovery') {
+    setCurrentPage('resetPassword');
+  }
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+  // Check for existing session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setUser(session?.user ?? null);
+    setLoading(false);
+  });
 
-    // Load settings
-    loadSettings();
+  // Listen for auth changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    setUser(session?.user ?? null);
+    
+    // Detect password recovery event
+    if (event === 'PASSWORD_RECOVERY') {
+      setCurrentPage('resetPassword');
+    }
+  });
 
-    return () => subscription.unsubscribe();
-  }, []);
+  // Load settings
+  loadSettings();
+
+  return () => subscription.unsubscribe();
+}, []);
 
   const loadSettings = async () => {
     const { data, error } = await supabase
@@ -136,6 +149,7 @@ export default function MinimalBlog() {
           {currentPage === 'tools' && <ToolsPage />}
           {currentPage === 'stories' && <StoriesPage />}
           {currentPage === 'settings' && <SettingsPage />}
+          {currentPage === 'resetPassword' && <ResetPasswordPage />}
         </main>
 
         <style>{`
@@ -1201,6 +1215,147 @@ function SettingsPage() {
           This minimal blog uses a clean white background with black text. 
           The accent color can be customized above.
         </p>
+      </div>
+    </div>
+  );
+}
+
+// Reset Password Page
+function ResetPasswordPage() {
+  const { setCurrentPage } = useApp();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: password
+    });
+
+    setLoading(false);
+
+    if (updateError) {
+      setError('Error updating password: ' + updateError.message);
+    } else {
+      setMessage('Password updated successfully! Redirecting...');
+      
+      // Clear hash from URL
+      window.history.replaceState(null, '', window.location.pathname);
+      
+      setTimeout(() => {
+        setCurrentPage('feed');
+      }, 2000);
+    }
+  };
+
+  return (
+    <div className="page-container fade-in">
+      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <h1 className="page-title">Reset Password</h1>
+        <p style={{ marginBottom: '32px', color: '#666' }}>Enter your new password below</p>
+        
+        <form onSubmit={handleResetPassword}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              New Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter new password"
+              required
+              minLength={6}
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '16px',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                fontFamily: 'Crimson Pro, serif'
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              required
+              minLength={6}
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '16px',
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                fontFamily: 'Crimson Pro, serif'
+              }}
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              padding: '12px',
+              marginBottom: '16px',
+              backgroundColor: '#fee',
+              color: '#c00',
+              borderRadius: '8px',
+              fontSize: '14px'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {message && (
+            <div style={{
+              padding: '12px',
+              marginBottom: '16px',
+              backgroundColor: '#efe',
+              color: '#060',
+              borderRadius: '8px',
+              fontSize: '14px'
+            }}>
+              {message}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {loading ? 'Updating Password...' : 'Reset Password'}
+          </button>
+        </form>
       </div>
     </div>
   );
