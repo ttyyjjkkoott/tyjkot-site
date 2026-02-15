@@ -940,12 +940,13 @@ function AboutPage() {
       <h1 className="page-title">About</h1>
       <div className="post-content">
         <p style={{ marginBottom: '24px' }}>
-          This is a minimal blog platform focused on clean design and thoughtful content. 
-          Built with intention, crafted with care.
+          My name is Tyler Kotlowski. I am 31 years old. I live in Minneapolis.
+        </p>
+        <p style={{ marginBottom: '24px' }}>
+          I build with intention, craft with care, and focus on clean design.
         </p>
         <p>
-          Every element serves a purpose. Every interaction feels natural. 
-          This is how writing on the web should feel.
+          Every element serves a purpose. Every interaction feels natural.
         </p>
       </div>
     </div>
@@ -959,10 +960,10 @@ function ContactPage() {
       <h1 className="page-title">Contact</h1>
       <div className="post-content">
         <p style={{ marginBottom: '24px' }}>
-          Get in touch at <strong>hello@example.com</strong>
+          Get in touch at <strong>tyjkot@proton.me</strong>
         </p>
         <p>
-          Or find me on the usual places around the web.
+          Or at <strong>(239) 484-4749</strong>
         </p>
       </div>
     </div>
@@ -975,7 +976,7 @@ function DocumentsPage() {
     <div className="page-container fade-in">
       <h1 className="page-title">Documents</h1>
       <div className="post-content">
-        <p>Document library coming soon. This modular page can be updated independently.</p>
+        <p>Document library coming soon.</p>
       </div>
     </div>
   );
@@ -987,7 +988,7 @@ function GalleryPage() {
     <div className="page-container fade-in">
       <h1 className="page-title">Gallery</h1>
       <div className="post-content">
-        <p>Image gallery coming soon. This modular page can be updated independently.</p>
+        <p>Image gallery coming soon.</p>
       </div>
     </div>
   );
@@ -999,7 +1000,7 @@ function ToolsPage() {
     <div className="page-container fade-in">
       <h1 className="page-title">Tools</h1>
       <div className="post-content">
-        <p>Helpful tools and utilities coming soon. This modular page can be updated independently.</p>
+        <p>Helpful tools and utilities coming soon.</p>
       </div>
     </div>
   );
