@@ -410,14 +410,17 @@ useEffect(() => {
 
           /* Feed/Post Cards */
           .post-card {
-            margin-bottom: 60px;
-            padding-bottom: 60px;
-            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 32px;
+            padding: 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             animation: fadeInUp 0.6s ease;
+            border: 1px solid #f0f0f0;
           }
 
           .post-card:last-child {
-            border-bottom: none;
+            margin-bottom: 0;
           }
 
           .post-date {
@@ -435,6 +438,7 @@ useEffect(() => {
             margin-bottom: 20px;
             letter-spacing: -0.02em;
             line-height: 1.2;
+            // color: var(--accent);
           }
 
           .post-content {
@@ -469,8 +473,8 @@ useEffect(() => {
           }
 
           .clickable-post:hover {
-            transform: translateX(8px);
-            background: #fafafa;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
           }
 
           /* Story Editor */
@@ -882,7 +886,7 @@ function FeedPage() {
         >
           ← Back to Feed
         </button>
-        <article className="post-card" style={{ borderBottom: 'none', paddingBottom: '40px' }}>
+        <article className="post-card" style={{ paddingBottom: '40px' }}>
           <div className="post-date">
             {new Date(selectedStory.date).toLocaleDateString('en-US', { 
               month: 'short', 
@@ -893,6 +897,9 @@ function FeedPage() {
           <h1 className="post-title" style={{ fontSize: '48px', marginBottom: '32px' }}>
             {selectedStory.title}
           </h1>
+          <div className="post-excerpt" style={{ fontSize: '20px', lineHeight: '1.8', marginBottom: '32px' }}>
+            {selectedStory.excerpt}
+          </div>
           <div className="post-content" style={{ fontSize: '20px', lineHeight: '1.8' }}>
             {selectedStory.content}
           </div>
