@@ -1049,9 +1049,6 @@ function ContactPage() {
         <p style={{ marginBottom: '24px' }}>
           Get in touch at <strong>tyjkot@proton.me</strong>
         </p>
-        <p>
-          Or at <strong>(239) 484-4749</strong>
-        </p>
       </div>
     </div>
   );
