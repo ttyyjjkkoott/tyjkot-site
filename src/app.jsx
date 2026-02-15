@@ -943,7 +943,7 @@ function AboutPage() {
           My name is Tyler Kotlowski. I am 31 years old. I live in Minneapolis.
         </p>
         <p style={{ marginBottom: '24px' }}>
-          I build with intention, craft with care, and focus on clean design.
+          Building with intention, crafting with care, and focusing on clean design.
         </p>
         <p>
           Every element serves a purpose. Every interaction feels natural.
