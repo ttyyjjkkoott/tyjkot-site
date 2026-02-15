@@ -656,6 +656,93 @@ useEffect(() => {
               font-size: 24px;
             }
           }
+            .tools-grid {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: 1fr;
+          }
+
+          .tool-card {
+            padding: 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+          }
+
+          .tool-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+          }
+
+          .tool-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 24px;
+          }
+
+          .tool-input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+          }
+
+          .tool-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-family: 'Crimson Pro', serif;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.2s ease;
+          }
+
+          .tool-input:focus {
+            border-color: var(--accent);
+          }
+
+          .tool-input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+          }
+
+          .tool-error {
+            padding: 16px;
+            background: #fff3f3;
+            border: 1px solid #ffcccc;
+            border-radius: 12px;
+            color: #cc0000;
+            font-size: 14px;
+          }
+
+          .tool-result {
+            padding: 24px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            margin-top: 16px;
+          }
+
+          .tool-result-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+          }
+
+          .tool-result-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: -0.01em;
+          }
         `}</style>
       </div>
     </AppContext.Provider>
@@ -999,9 +1086,105 @@ function ToolsPage() {
   return (
     <div className="page-container fade-in">
       <h1 className="page-title">Tools</h1>
-      <div className="post-content">
-        <p>Helpful tools and utilities coming soon.</p>
+      <div className="tools-grid">
+        <CountyFinder />
       </div>
+    </div>
+  );
+}
+
+// County Finder Tool
+function CountyFinder() {
+  const [address, setAddress] = useState('');
+  const [county, setCounty] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const findCounty = async () => {
+    if (!address.trim()) {
+      setError('Please enter an address');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setCounty('');
+
+    try {
+      // Using Nominatim (OpenStreetMap) - free geocoding API
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&addressdetails=1&limit=1`,
+        {
+          headers: {
+            'User-Agent': 'TyjkotSite/1.0'
+          }
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const result = data[0];
+        const countyName = result.address?.county || result.address?.state_district || 'County not found';
+        setCounty(countyName);
+      } else {
+        setError('Address not found. Please try a different address.');
+      }
+    } catch (err) {
+      setError('Failed to fetch county information. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      findCounty();
+    }
+  };
+
+  const handleNewSearch = () => {
+    setAddress('');
+    setCounty('');
+    setError('');
+  };
+
+  return (
+    <div className="tool-card">
+      <h2 className="tool-title">County Finder</h2>
+      <p className="tool-description">Enter any U.S. address to find its county</p>
+      
+      <div className="tool-input-group">
+        <input
+          type="text"
+          className="tool-input"
+          placeholder="123 Main St, City, State"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={loading}
+        />
+        <button 
+          className="btn btn-primary" 
+          onClick={findCounty}
+          disabled={loading || !address.trim()}
+        >
+          {loading ? 'Searching...' : 'Find County'}
+        </button>
+      </div>
+
+      {error && (
+        <div className="tool-error">
+          {error}
+        </div>
+      )}
+
+      {county && !error && (
+        <div className="tool-result">
+          <div className="tool-result-label">County:</div>
+          <div className="tool-result-value">{county}</div>
+        </div>
+      )}
     </div>
   );
 }
